@@ -1,6 +1,7 @@
 # Felhő és DevOps alapok kötelező program
 A Szegedi Tudományegyetem "Felhő és DevOps alapok" nevű gyakorlati kurzusra készített kötelező program. A "Programrendszerek Fejlesztése" nevű kurzusra írt kötelező programot fogja CI/CD környezetbe beletenni, különböző modulokkal kiegészítve a követelmény alapján. A jelenlegi repository-ban csak a scriptfájlokat, illetve a különböző build fájlokat lehet megtalálni.
 
+Fontos megjegyezni, hogy ha linuxot használunk az itt leírt parancsokat bizonyos disztribúciók esetén root felhasználóként kell futtatni, ezért mindegyik elé oda kell írni ilyen esetben a 'sudo' szót (bizonyos disztribúciók esetén viszont elhagyható.)
 A saját beüzemeléshez rendelkezni kell telepített dockerrel, és a következő lépéseket kell megtenni:
 
 ## 1. lépés
@@ -12,7 +13,7 @@ Klónozzuk ezt a repository-t egy tetszőleges helyre a fájlrendszerünkön a g
 Nyissunk egy terminált, navigáljunk a docker mappába, és adjuk ki a következő parancsot:
 
 ```
-docker-compose up --build
+docker compose up --build
 ```
 
 Ekkor a docker elkezdi a docker-compose.yml fájl alapján felépíteni az egész rendszert. A programrendszer több konténerből áll, és minden szerkezeti elem külön konténert alkot. Jelenleg a kliens, a szerver, az adatbázis, és a jenkins konténerek léteznek, ezek jönnek létre előre konfigurált beállításokkal.
