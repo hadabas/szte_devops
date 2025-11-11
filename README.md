@@ -47,3 +47,47 @@ A private key résznél kattintsunk az enter directly opcióra, és jobb oldalon
 Ha sikeresen végrehajtottuk ezt az utólagos konfigurációt, jogot adtunk a jenkins konténerünknek arra, hogy minden más konténerre rá tudjon ssh kapcsolaton keresztül lépni, ami kulcsfontosságú a CI/CD pipeline-ok futtatásához.
 
 A demonstráció érdekében én egy saját, védtelen, előre legenerált privát és publikus kulcskombinációval dolgozok, de ha sajátot szeretnénk generálni azt is megtehetjük, de akkor az legyen a 0. lépés az összes lépés előtt, hogy saját kulcspárt generálunk és kicseréljük a keys mappa tartalmát a saját kulcsokra (a neveknek meg kell, hogy egyezzenek). Utána a lépéseken végigmenve egészen csak ennél a lépésnél kell a saját privát kulcsunkat itt bemásolni.
+
+**Ezzel vége is a rendszer feltelepítésének.**
+
+## A programrendszer használata
+
+A háttérben felállt a programrendszer pár alrendszere a docker segítségével, ezek különböző programkomponensek, amik a modularizációt kihasználva akár teljesen külön skálázhatóak. Nézzük komponensenként a hozzáférést:
+
+## 1. Komponens: Jenkins
+
+Elérhető a
+
+```
+http://localhost:8080
+```
+
+webcímen bármilyen böngészőben. Ezt már láthattuk az előkonfiguráció során, de ha megnyitjuk a weboldalt és bejelentkezünk, a dashboardon már található egy pár pipeline (a bal felső logóra kattintva bármikor visszadob minket a dashboardra). Először futtassuk a 'Server CICD pipeline' pipelinet. Ez feltelepíti a szerver konténerébe a jenkins pipeline instrukciói alapján a program szerver részét.
+
+Ha ez lefutott, futtassuk le a 'Client CICD pipeline' pipelinet. Az pedig a kliens konténerébe fogja feltelepíteni a program kliens részét. Ha mind a kettő lefutott rendben, akkor elérhetővé és működőképessé válik a következő komponens, a kliens komponens.
+
+A futtatott pipeline parancssort meg is lehet tekinteni a jenkinsen belül.
+
+## 2. Komponens: Kliens
+
+Előfeltétel, hogy a két CI/CD pipelinenak hibamentesen le kell futnia az előző lépésben. Ha ez megtörtént, a kliens elérhető a 
+
+```
+http://localhost:4200
+```
+
+webcímen. Ez a már egyszer bemutatott könyvtármenedzselő program kliens része. Ez a projekt egyébként elérhető a:
+
+**https://github.com/hadabas/prf-konyvklub**
+
+github repository-n. Ez a devops-os projekt ezen programkódnak a 'devops' branchen lévő verzióját használja. Az ebben a lépésben használt rész teljes egésze megtalálható az ottani 'client' mappában. Egyébként a következő komponens, a szerverkomponens része is megtalálható az ottani 'server' mappában.
+
+## 3. Komponens: Szerver
+
+Ennek a komponensnek a hibamentes felállásához is előfeltétel, hogy fusson le mindkét CI/CD pipeline hibamentesen. Ez a komponens elsősorban a kliens, és az adatbázis komponensekkel fog a háttérben csöndben kommunikálni, a felhasználóval nem nagyon végez semmiféle interakciót.
+
+## 4. Komponens: Adatbázis
+
+Az eredeti projekt egy internetes adatbázist használt ami mongodb alapú, azért azonban hogy ez az egész helyileg futtatható és skálázható legyen, olyan verzióját használjuk a programnak ami egy kicsit át lett írva. A program ezen verziója helyileg keres egy adatbázist, amibe folyamatosan írni fogja az adatokat attól függően, hogy a felhasználók a kliens weboldalon miket csinálnak. Minden felhasználó által bevitt adat ebbe az adatbázis konténerbe fog mentődni.
+
+Ez a komponens csak magát a mongodb adatbázist tartalmazza, amibe a kliens és a szerver komponensek is tudnak írni. (Bár védelem miatt a kliens csak a szerveren keresztül tud belenyúlni.)
