@@ -44,3 +44,5 @@ Username: deploy
 A private key résznél kattintsunk az enter directly opcióra, és jobb oldalon az 'Add' kék gombra. Másoljuk be ide a **docker/keys/jenkins_deploy_key** privát kulcs teljes tartalmát. A Passphrase-t hagyjuk üresen, majd kattintsunk a create gombra.
 
 Ha sikeresen végrehajtottuk ezt az utólagos konfigurációt, jogot adtunk a jenkins konténerünknek arra, hogy minden más konténerre rá tudjon ssh kapcsolaton keresztül lépni, ami kulcsfontosságú a CI/CD pipeline-ok futtatásához.
+
+A demonstráció érdekében én egy saját, védtelen, előre legenerált privát és publikus kulcskombinációval dolgozok, de ha sajátot szeretnénk generálni azt is megtehetjük, de akkor az legyen a 0. lépés az összes lépés előtt, hogy saját kulcspárt generálunk és kicseréljük a keys mappa tartalmát a saját kulcsokra (a neveknek meg kell, hogy egyezzenek). Utána a lépéseken végigmenve egészen csak ennél a lépésnél kell a saját privát kulcsunkat itt bemásolni.
