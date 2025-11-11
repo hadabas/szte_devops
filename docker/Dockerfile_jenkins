@@ -1,0 +1,13 @@
+FROM jenkins/jenkins:lts-jdk21
+
+USER root
+
+# Plugins telepítése
+COPY ./jenkins_init/plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+# Pipeline-ok másolása
+COPY ./jenkins_init/jenkins_jobs /usr/share/jenkins/ref/jobs
+COPY ./jenkins_init/init.groovy.d/ /usr/share/jenkins/ref/init.groovy.d/
+
+USER jenkins
