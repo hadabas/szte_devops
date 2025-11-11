@@ -6,7 +6,7 @@ A saját beüzemeléshez rendelkezni kell telepített dockerrel, és a következ
 
 ## 1. lépés
 
-Klónozzuk ezt a repository-t egy tetszőleges helyre a fájlrendszerünkön a git clone paranccsal. Klónozás után, lépjünk be a klónozott mappába, és hozzunk létre egy mappát 'jenkins_home' néven, majd hagyjuk üresen. Ennek a létrehozott mappának a docker mappa mellett kell lennie a fájlrendszeren, és az a lényeg, hogy ugyan az a felhasználó hozza létre, aki majd a docker compose up parancsot futtatja (a jogosultságok miatt).
+Klónozzuk ezt a repository-t egy tetszőleges helyre a fájlrendszerünkön a git clone paranccsal. Klónozás után, lépjünk be a klónozott mappába, és **hozzunk létre egy mappát 'jenkins_home' néven**, majd hagyjuk üresen. Ennek a létrehozott mappának a docker mappa mellett kell lennie a fájlrendszeren, és az a lényeg, hogy ugyan az a felhasználó hozza létre, aki majd a docker compose up parancsot futtatja (a jogosultságok miatt).
 
 ## 2. lépés
 
