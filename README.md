@@ -11,9 +11,9 @@ Klónozzuk ezt a repository-t egy tetszőleges helyre a fájlrendszerünkön a g
 
 Nyissunk egy terminált, navigáljunk a docker mappába, és adjuk ki a következő parancsot:
 
-"""
+```
 docker-compose up --build
-"""
+```
 
 Ekkor a docker elkezdi a docker-compose.yml fájl alapján felépíteni az egész rendszert. A programrendszer több konténerből áll, és minden szerkezeti elem külön konténert alkot. Jelenleg a kliens, a szerver, az adatbázis, és a jenkins konténerek léteznek, ezek jönnek létre előre konfigurált beállításokkal.
 
@@ -21,8 +21,26 @@ Ekkor a docker elkezdi a docker-compose.yml fájl alapján felépíteni az egés
 
 Nagyjából 2-3 perc után (internetsebességtől függően) a docker letölti az összes imaget, és létrehozza a konfigurációs fájlok alapján a konténereket. Először a jenkins-be ajánlott belépni, ahol egy kis utólagos konfigurációt kell végezni ahhoz, hogy a rendszer véglegesen működőképes maradjon. Ezt a konténerek felállása után megtehetjük, ha felkeressük a 
 
-"""
+```
 http://localhost:8080
-"""
+```
 
-linken a jenkinsünk webszerveres hozzáférését.
+linken a frissen telepített jenkinsünk webes felületét. A felhasználónév és jelszó: **admin/admin**. Lépjünk be, válasszuk ki, hogy saját magunk szeretnénk modulokat telepíteni, és felül kattintsunk a megjelenő ablakban a **None** opcióra. Nem szeretnénk csomagokat feltelepíteni, mert az automatizáció miatt a csomagok amikre szükségünk van már települtek a háttérben. Ha végeztünk, hagyjuk jóvá a döntésünket, és ezután a fő dashboardon találjuk magunkat.
+
+## 4. lépés
+
+Biztonsági okokból az ssh kulcsokat kézzel kell hozzáadni a rendszerhez utólag. A jobb felső sarokban kattintsunk a fogaskerékre, majd a "Credentials" menüre (ha a felület nem angol, váltsuk át a felületet angolra, a locale modul telepítve van). Kattintsunk a kék színű "System" store-ra, majd a Global credentials (unrestricted) kék szövegre. A jobb felső sarokban lesz egy kék gomb, "Add Credentials" néven, kattintsunk rá.
+
+Állítsuk be a következőket:
+
+```
+Kind: SSH Username with private key
+Scope: Global
+Id: jenkins-deploy-key
+Description: <Tetszőleges, akár kihagyható.>
+Username: deploy
+```
+
+A private key résznél kattintsunk az enter directly opcióra, és jobb oldalon az 'Add' kék gombra. Másoljuk be ide a **docker/keys/jenkins_deploy_key** privát kulcs teljes tartalmát. A Passphrase-t hagyjuk üresen, majd kattintsunk a create gombra.
+
+Ha sikeresen végrehajtottuk ezt az utólagos konfigurációt, jogot adtunk a jenkins konténerünknek arra, hogy minden más konténerre rá tudjon ssh kapcsolaton keresztül lépni, ami kulcsfontosságú a CI/CD pipeline-ok futtatásához.
