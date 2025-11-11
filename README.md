@@ -30,7 +30,7 @@ linken a frissen telepített jenkinsünk webes felületét. A felhasználónév 
 
 ## 4. lépés
 
-Biztonsági okokból az ssh kulcsokat kézzel kell hozzáadni a rendszerhez utólag. A jobb felső sarokban kattintsunk a fogaskerékre, majd a "Credentials" menüre (ha a felület nem angol, váltsuk át a felületet angolra, a locale modul telepítve van). Kattintsunk a kék színű "System" store-ra, majd a Global credentials (unrestricted) kék szövegre. A jobb felső sarokban lesz egy kék gomb, "Add Credentials" néven, kattintsunk rá.
+Biztonsági okokból az ssh kulcsokat kézzel kell hozzáadni a rendszerhez utólag. A jobb felső sarokban kattintsunk a fogaskerékre, majd a "Credentials" menüre (ha a felület nem angol, váltsuk át a felületet angolra, a locale modul telepítve van). Kattintsunk a kék színű "System" store-ra, majd a "Global credentials (unrestricted)" kék szövegre. A jobb felső sarokban lesz egy kék gomb, "Add Credentials" néven, kattintsunk rá.
 
 Állítsuk be a következőket:
 
