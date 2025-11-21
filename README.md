@@ -68,7 +68,7 @@ Ha ez lefutott, futtassuk le a 'Client CICD pipeline' pipelinet. Az pedig a klie
 
 A futtatott pipeline parancssort meg is lehet tekinteni a jenkinsen belül.
 
-## 2. Komponens: Kliens
+## 2. Komponens: NodeJS alkalmazás (Client + Server)
 
 Előfeltétel, hogy a két CI/CD pipelinenak hibamentesen le kell futnia az előző lépésben. Ha ez megtörtént, a kliens elérhető a 
 
@@ -80,14 +80,26 @@ webcímen. Ez a már egyszer bemutatott könyvtármenedzselő program kliens ré
 
 **https://github.com/hadabas/prf-konyvklub**
 
-github repository-n. Ez a devops-os projekt ezen programkódnak a 'devops' branchen lévő verzióját használja. Az ebben a lépésben használt rész teljes egésze megtalálható az ottani 'client' mappában. Egyébként a következő komponens, a szerverkomponens része is megtalálható az ottani 'server' mappában.
+github repository-n. Ez a devops-os projekt ezen programkódnak a 'devops' branchen lévő verzióját használja. Az ebben a lépésben használt rész teljes egésze megtalálható az ottani 'client' mappában. Egyébként a szerverkomponens része is megtalálható az ottani 'server' mappában, de a szerverkomponens a felhasználó részére rejtve marad.
 
-## 3. Komponens: Szerver
+## 3. Komponens: Zabbix
 
-Ennek a komponensnek a hibamentes felállásához is előfeltétel, hogy fusson le mindkét CI/CD pipeline hibamentesen. Ez a komponens elsősorban a kliens, és az adatbázis komponensekkel fog a háttérben csöndben kommunikálni, a felhasználóval nem nagyon végez semmiféle interakciót.
+Egy komplex monitorozó modul. Egy kis előkonfigurációt igényel a használata, először:
 
-## 4. Komponens: Adatbázis
+```
+http://localhost:8081
+```
+Admin / zabbix
+felhasználónév és jelszó kombinációval lépjünk be.
 
-Az eredeti projekt egy internetes adatbázist használt ami mongodb alapú, azért azonban hogy ez az egész helyileg futtatható és skálázható legyen, olyan verzióját használjuk a programnak ami egy kicsit át lett írva. A program ezen verziója helyileg keres egy adatbázist, amibe folyamatosan írni fogja az adatokat attól függően, hogy a felhasználók a kliens weboldalon miket csinálnak. Minden felhasználó által bevitt adat ebbe az adatbázis konténerbe fog mentődni.
+Majd vegyünk fel egy új host-ot a create host gombbal:
+Host-name: docker-agent
+Templates: Templates kateógriára kattintsunk , és keressük meg a "Docker by Zabbix agent 2" template-et.
+Host Groups: Linux servers
+Interfaces: Add -> Agent, válasszuk ki a DNS-t, és írjuk be: "zbx-agent2"
+-- alternatívan lehet IP alapján is, az agent belső IP címe 172.32.0.11. A port minden esetben 10050.
+Majd kattintsunk az Add gombra.
 
-Ez a komponens csak magát a mongodb adatbázist tartalmazza, amibe a kliens és a szerver komponensek is tudnak írni. (Bár védelem miatt a kliens csak a szerveren keresztül tud belenyúlni.)
+Ez egy speciális template, amely igényli hogy létezzen külön konténerben egy agent ami semelyik másik konténerbe sincs beépítve, viszont root jogosultsága legyen a docker socketre. Egy kis idő után elérhetővé válik az összes jelenleg futó konténer adata, és bármi érdekel minket, megnézhetjük.
+
+## 4. Komponens: Graylog
