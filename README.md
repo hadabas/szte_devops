@@ -103,3 +103,12 @@ Majd kattintsunk az Add gombra.
 Ez egy speciális template, amely igényli hogy létezzen külön konténerben egy agent ami semelyik másik konténerbe sincs beépítve, viszont root jogosultsága legyen a docker socketre. Egy kis idő után elérhetővé válik az összes jelenleg futó konténer adata, és bármi érdekel minket, megnézhetjük.
 
 ## 4. Komponens: Graylog
+Elérhető a
+```
+http://localhost:9000
+```
+címen. Felhasználónév: admin, jelszó: nézzük ki a konzol ablakból (ezt csak egyszer kell).
+Utána csináljuk végig az initial setup-ot a tanult módon. Egy datanode-ot csináltunk a rendszerhez. Miután az initial setup-nak vége van, újra be kell jelentkezni, ez már rögzítetten a következő adatokkal történik:
+username: admin
+password: verysecretpassword
+Ismételten a tanult módon vegyünk fel egy Syslog UDP input-ot. 5140-es portra bindeljük, a 0.0.0.0 címen. A többi beállítást tetszőlegesre lehet állítani. Végül kattintsunk a Launch Input-ra, majd a sárga Set-up Input gombra. Csináljunk egy Stream-et, itt is tetszés szerint lehet beállítani, majd a végén a Launch-nál, kattintsunk a Start Input-ra.
