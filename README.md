@@ -118,3 +118,7 @@ Password: verysecretpassword
 ```
 
 Ismételten a tanult módon vegyünk fel egy Syslog UDP input-ot. 5140-es portra bindeljük, a 0.0.0.0 címen. A többi beállítást tetszőlegesre lehet állítani. Végül kattintsunk a Launch Input-ra, majd a sárga Set-up Input gombra. Csináljunk egy Stream-et, itt is tetszés szerint lehet beállítani, majd a végén a Launch-nál, kattintsunk a Start Input-ra.
+
+Ez után, minden össze van kötve, az egyetlen datanode-unk monitorozza a klienst, és a szervert is. Ahhoz, hogy jelenjenek meg log-ok használnunk kell a programunkat (localhost:4200), regisztráljunk felhasználót, csinájunk könyveket, klubokat stb. és látható lesz a logolás menete.
+
+## 5. Komponens: ???
