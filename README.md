@@ -68,7 +68,7 @@ Ha ez lefutott, futtassuk le a 'Client CICD pipeline' pipelinet. Az pedig a klie
 
 A futtatott pipeline parancssort meg is lehet tekinteni a jenkinsen belül.
 
-## 2. Komponens: NodeJS alkalmazás (Client + Server)
+## 2. Komponens: NodeJS alkalmazás (Client + Server) + Docker Compose
 
 Előfeltétel, hogy a két CI/CD pipelinenak hibamentesen le kell futnia az előző lépésben. Ha ez megtörtént, a kliens elérhető a 
 
