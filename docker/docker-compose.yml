@@ -1,0 +1,206 @@
+services:
+  # Jenkins modul
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile_jenkins
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ../jenkins_home:/var/jenkins_home
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.2  # Assign a static IP to Jenkins
+
+  # Core modulok (a tényleges szoftver komponensei)
+  client_container:
+    build:
+      context: .
+      dockerfile: Dockerfile_deploy_client
+    container_name: Client_container
+    ports:
+      - "4200:4200"
+      - "2222:22"
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.3  # Assign a static IP to client container
+    command: ["/bin/bash", "-c", "/usr/sbin/sshd && /bin/bash"]
+    tty: true
+    stdin_open: true
+
+  server_container:
+    build:
+      context: .
+      dockerfile: Dockerfile_deploy_server
+    container_name: Server_container
+    ports:
+      - "5000:5000"
+      - "2223:22"
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.4 # Assign static IP to server container
+    command: ["/bin/bash", "-c", "/usr/sbin/sshd && /bin/bash"]
+    tty: true
+    stdin_open: true
+
+  mongodb_container:
+    image: mongo:8.2.1
+    container_name: MongoDB_container
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.5 # Assign static IP to DB container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - ./graylog:/docker-entrypoint-initdb.d
+
+
+
+
+
+ # Monitorozáshoz modulok:
+ # Zabbix
+
+  mysql:
+    image: mariadb:10.11
+    container_name: zbx-mysql
+    command: --character-set-server=utf8 --collation-server=utf8_bin
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.12
+    restart: unless-stopped
+
+  zabbix-server:
+    image: zabbix/zabbix-server-mysql:latest
+    container_name: zbx-server
+    depends_on:
+      - mysql
+    environment:
+      DB_SERVER_HOST: 172.32.0.12
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix
+      MYSQL_DATABASE: zabbix
+    ports:
+      - "10051:10051"
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.10  # Assign a static IP to Zabbix-server
+    restart: unless-stopped
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-mysql:latest
+    container_name: zbx-web
+    depends_on:
+      - zabbix-server
+      - mysql
+    environment:
+      DB_SERVER_HOST: 172.32.0.12
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix
+      MYSQL_DATABASE: zabbix
+      ZBX_SERVER_HOST: zabbix-server
+      PHP_TZ: Europe/Budapest
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.13
+    ports:
+      - "8081:8080"
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  zbx-agent2:
+    image: zabbix/zabbix-agent2:alpine-latest
+    container_name: zbx-agent2
+    user: "0"
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.11
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ZBX_SERVER_HOST: zabbix-server
+      ZBX_HOSTNAME: docker-agent
+    restart: unless-stopped
+
+# Graylog
+  datanode:
+    image: graylog/graylog-datanode:7.0
+    hostname: "datanode"
+    environment:
+      GRAYLOG_DATANODE_NODE_ID_FILE: "/var/lib/graylog-datanode/node-id"
+      # GRAYLOG_DATANODE_PASSWORD_SECRET and GRAYLOG_PASSWORD_SECRET MUST be the same value
+      GRAYLOG_DATANODE_PASSWORD_SECRET: "verysecretpassword"
+      GRAYLOG_DATANODE_MONGODB_URI: "mongodb://graylog:strongpassword@mongodb_container:27017/graylog?authSource=graylog"
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "127.0.0.1:8999:8999/tcp"   # DataNode API
+      - "127.0.0.1:9200:9200/tcp"
+      - "127.0.0.1:9300:9300/tcp"
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.21
+    restart: "on-failure"
+
+  graylog:
+    image: graylog/graylog:7.0
+    hostname: server
+    container_name: graylog
+    environment:
+      GRAYLOG_NODE_ID_FILE: "/usr/share/graylog/data/data/node-id"
+      GRAYLOG_PASSWORD_SECRET: verysecretpassword
+      GRAYLOG_ROOT_PASSWORD_SHA2: c484bd9c5af958bac183733a3afde8ec2a62f41e7832232c7d5548d1efe66d8c
+      GRAYLOG_HTTP_BIND_ADDRESS: "0.0.0.0:9000"
+      GRAYLOG_HTTP_EXTERNAL_URI: "http://localhost:9000/"
+      GRAYLOG_MONGODB_URI: "mongodb://graylog:strongpassword@mongodb_container:27017/graylog?authSource=graylog"
+    depends_on:
+      - mongodb_container
+      - datanode
+    entrypoint: "/usr/bin/tini --  /docker-entrypoint.sh"
+    ports:
+      - "9000:9000"
+      - "12201:12201/udp"
+      - "5140:5140/udp"
+      - "1514:1514"
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.20
+
+  # Webszerver konténere
+  # Engine X (nginx)
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile_nginx
+    container_name: nginx
+    ports:
+      - 80:80
+    networks:
+      deploy-network:
+        ipv4_address: 172.32.0.30
+
+
+networks:
+  deploy-network:
+    name: deploy-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.32.0.0/16
