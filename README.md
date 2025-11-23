@@ -121,4 +121,12 @@ Ismételten a tanult módon vegyünk fel egy Syslog UDP input-ot. 5140-es portra
 
 Ez után, minden össze van kötve, az egyetlen datanode-unk monitorozza a klienst, és a szervert is. Ahhoz, hogy jelenjenek meg log-ok használnunk kell a programunkat (localhost:4200), regisztráljunk felhasználót, csinájunk könyveket, klubokat stb. és látható lesz a logolás menete.
 
-## 5. Komponens: ???
+## 5. Komponens: nginx
+
+Ahhoz, hogy a modult lehessen használni, első lépésben le kell futtatnunk a következő parancsot a linuxos host számítógépen (amin a docker környezet fut):
+```
+echo "127.0.0.1  konyvtarklub.test" | sudo tee -a /etc/hosts
+```
+Ha Windows-os rendszert használunk, akkor pedig az /etc/hosts fájlnak megfelelő fájl aljára kell beszúrni az idézőjelek közötti részt, majd menteni. Mivel a program komplexebben van megírva (sok biztonsági feltétellel, stb.), egyszerűbb kihasználni hogy a docker az 127.0.0.1-es címre egy az egyben mindent kiköt. (És a host alapból nincsen be bridgelve a belső docker hálózatba docker-compose használata esetén.)
+
+Ez után a böngészőnkben nemcsak a "localhost:4200" alatt érhető el a kliens programunk, hanem a "konyvtarklub.test" címen is el lehet érni.
