@@ -2,7 +2,7 @@
 A Szegedi Tudományegyetem "Felhő és DevOps alapok" nevű gyakorlati kurzusra készített kötelező program. A "Programrendszerek Fejlesztése" nevű kurzusra írt kötelező programot fogja CI/CD környezetbe beletenni, különböző modulokkal kiegészítve a követelmény alapján. A jelenlegi repository-ban csak a scriptfájlokat, illetve a különböző build fájlokat lehet megtalálni.
 
 Fontos megjegyezni, hogy ha linuxot használunk az itt leírt parancsokat bizonyos disztribúciók esetén root felhasználóként kell futtatni, ezért mindegyik elé oda kell írni ilyen esetben a 'sudo' szót (bizonyos disztribúciók esetén viszont elhagyható.)
-A saját beüzemeléshez rendelkezni kell telepített dockerrel, és a következő lépéseket kell megtenni:
+A saját beüzemeléshez rendelkezni kell telepített dockerrel és docker-compose-al, és a következő lépéseket kell megtenni:
 
 ## 1. lépés
 
